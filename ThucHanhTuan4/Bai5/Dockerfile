@@ -1,11 +1,10 @@
-FROM python:3.9
-
+FROM golang:1.20-alpine AS build
 WORKDIR /app
+COPY . .
+RUN go build -o main .
 
-RUN pip install flask
-
-COPY app.py .
-
-EXPOSE 5000
-
-CMD ["python", "app.py"]
+FROM alpine:latest
+WORKDIR /app
+COPY --from=build /app/main ./
+EXPOSE 8080
+CMD ["./main"]
